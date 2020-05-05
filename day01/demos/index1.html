@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="root">
+        <p>{{name}}</p>
+        <p>{{message}}</p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        /*         console.log(root)
+                let app = new Vue({
+                    el: '#root',
+                    data: {
+                        name: 'dxh',
+                        message: 'hello world'
+                    },
+                })
+                console.log(root) */
+        let rkuohao = /\{\{(.+?)\}\}/g
+        /* 获得模板 */
+        let tmpNode = document.querySelector('#root')
+        let data = {
+            name: '一个新的name',
+            message: '一个消息'
+        }
+        /* 编译模板 */
+        function compiler(template, data) {
+            let childNode = template.childNodes;
+            childNode.forEach((element, index) => {
+                let type = element.nodeType; //1.元素  3.文本节点
+                if (type === 3) {
+                    let txt = element.nodeValue
+                    /* 参数1 匹配到的内容 参数2 正则的第一个分组 */
+                    txt = txt.replace(rkuohao, function (_, g) {
+                        let key = g.trim()
+                        let value = data[key]
+                        return value
+                    })
+                    element.nodeValue = txt
+                } else if (type === 1) {
+                    //元素，考虑它有没有元子素 递归
+                    compiler(element, data)
+                }
+
+            });
+        }
+        let generateNode = tmpNode.cloneNode(true)
+        console.log(tmpNode)
+        compiler(tmpNode, data)
+        /*  */
+        console.log(generateNode)
+       // root.parentNode.replaceChild(generateNode,root)
+    </script>
+</body>
+
+</html>

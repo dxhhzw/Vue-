@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="root">
+        <div>
+            <p>
+                {{name}}--{{message}}
+            </p>
+        </div>
+        <p>
+            {{name}}
+        </p>
+        <p>
+            {{message}}
+        </p>
+    </div>
+    <script>
+        let rkuohao = /\{\{(.+?)\}\}/g
+        /* 编译模板 */
+        function compiler(template, data) {
+            let childNode = template.childNodes;
+            childNode.forEach((element, index) => {
+                let type = element.nodeType; //1.元素  3.文本节点
+                if (type === 3) {
+                    let txt = element.nodeValue
+                    /* 参数1 匹配到的内容 参数2 正则的第一个分组 */
+                    txt = txt.replace(rkuohao, function (_, g) {
+                        let key = g.trim()
+                        let value = data[key]
+                        return value
+                    })
+                    element.nodeValue = txt
+                } else if (type === 1) {
+                    //元素，考虑它有没有元子素 递归
+                    compiler(element, data)
+                }
+
+            });
+        }
+        function JGVue(options) {
+            this._data = options.data
+            this._el = options.el
+            this.$el = this._templateDOM = document.querySelector(this._el)
+            this._parent = this._templateDOM.parentNode
+             this.render()
+        }
+
+        /* 将模板结合数据 得到html加到页面中 */
+        JGVue.prototype.render = function () {
+            this.compiler()
+        }
+        /* 编译将模板与数据结合得到真正的DOM元素 */
+        JGVue.prototype.compiler = function () {
+            let realHTMLDOM = this._templateDOM.cloneNode(true)
+            compiler(realHTMLDOM, this._data)
+            this.update(realHTMLDOM)
+        }
+        /* 将DMO元素放到页面中 */
+        JGVue.prototype.update = function (real) {
+            this._parent.replaceChild(real, document.querySelector('#root'))
+        }
+        function getValueByPath(obj,path){
+            let paths = path.split('.')
+            let res = obj
+            let prop
+            while (prop = paths.shift()) {
+                res=obj[prop]
+            }
+            return res
+        }
+        let app = new JGVue({
+            el: '#root',
+            data: {
+                name: 'dxh',
+                message: 'info'
+            }
+        })
+    </script>
+</body>
+
+</html>
