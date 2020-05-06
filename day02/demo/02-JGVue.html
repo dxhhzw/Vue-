@@ -44,7 +44,7 @@
                     _attrObj[attrs[i].nodeName] = attrs[i].nodeValue
                 }
                 _vnode = new VNode(nodeName, _attrObj, undefined, nodeType)
-                /* 子元素 */
+                    /* 子元素 */
                 let childNodes = node.childNodes
                 childNodes.forEach(element => {
                     _vnode.appendChild(getVNode(element))
@@ -55,6 +55,7 @@
             return _vnode
         }
         let rkuohao = /\{\{(.+?)\}\}/g
+
         function getValueByPath(obj, path) {
             let paths = path.split('.')
             let res = obj
@@ -64,64 +65,71 @@
             }
             return res
         }
+
         function combine(vnode, data) {
             let _type = vnode.type
             let _data = vnode.data
             let _value = vnode.value
-            let tag = vnode.tag
+            let _tag = vnode.tag
             let _children = vnode.children
             let _vnode = null
             if (_type === 3) {
-                _value = _value.replace(rkuohao, function (_, g) {
+                _value = _value.replace(rkuohao, function(_, g) {
                     return getValueByPath(data, g.trim())
                 })
                 _vnode = new VNode(_tag, _data, _value, _type)
             } else if (_type === 1) {
                 _vnode = new VNode(_tag, _data, _value, _type)
                 _children.forEach(_subvnode => {
-                    _vnode.appendChild(combine(_subvnode))
+                    _vnode.appendChild(combine(_subvnode, data))
                 })
             }
+            return _vnode
         }
+
         function JGVue(options) {
-            this._data = options._data
+            this._data = options.data
             this._template = document.querySelector(options.el)
             this.mount()
         }
-        JGVue.prototype.mount = function () {
+        JGVue.prototype.mount = function() {
             //提供一个render方法:生成虚拟dom
             this.render = this.createRenderFn()
             this.mountComponent()
         }
-        JGVue.prototype.mountComponent = function () {
-            let mount = () => {
-                this.update(this.render())
+        JGVue.prototype.mountComponent = function() {
+                let mount = () => {
+                    this.update(this.render())
+                }
+                mount.call(this)
             }
-            mount.call(this)
-        }
-        /* 
-        *1.在真正的vue中使用的二次提交
-        *2.在页面中dom合虚拟dom是一一对应的
-        *3.先由ast和data生成VNode（新，render）
-        *4.将旧的VNode和新的VNode比较（diff），更新（update）
-         */
-        //生成render函数，目的是缓存抽象语法树
-        JGVue.prototype.createRenderFn = function () {
-            //Vue:将AST+data=>VNode
-            //我们：将带有坑的VNode+data=>含有数据的VNode
-            let ast = getVNode()
-            return function render() {
-                let _tmp = combine(ast,this._data)
-                debugger
-                return _tmp
+            /* 
+             *1.在真正的vue中使用的二次提交
+             *2.在页面中dom合虚拟dom是一一对应的
+             *3.先由ast和data生成VNode（新，render）
+             *4.将旧的VNode和新的VNode比较（diff），更新（update）
+             */
+            //生成render函数，目的是缓存抽象语法树
+        JGVue.prototype.createRenderFn = function() {
+                //Vue:将AST+data=>VNode
+                //我们：将带有坑的VNode+data=>含有数据的VNode
+                let ast = getVNode(this._template)
+                return function render() {
+                    let _tmp = combine(ast, this._data)
+                    debugger
+                    return _tmp
+                }
             }
-        }
-        //将虚拟dom渲染到页面中，diff算法也在里面
-        JGVue.prototype.update = function () {
+            //将虚拟dom渲染到页面中，diff算法也在里面
+        JGVue.prototype.update = function() {
 
         }
         let app = new JGVue({
-
+            el: "#root",
+            data: {
+                name: "张三",
+                age: "19"
+            }
         })
     </script>
 </body>
