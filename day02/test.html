@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="root">
+        <div>
+            <button @click="testClick">点击插入数据</button>
+        </div>
+        {{list1}}
+        <div>
+            表1
+            <table>
+                <thead>
+                    <tr>
+                        <th>列1</th>
+                        <th>列2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in list1" @click="btnClick(item.frends)">
+                        <td>{{item.name}}</td>
+                        <td>{{item.age}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            表二
+            <table>
+                <thead>
+                    <tr>
+                        <th>列1</th>
+                        <th>列2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in temp">
+                        <td>{{item.name}}</td>
+                        <td>{{item.age}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        let app = new Vue({
+            el: '#root',
+            data: {
+                list1: [{ name: 'dxh', age: 19, frends: [{ name: 'ltf', age: 20, }, { name: 'st', age: 20, }] }],
+                temp: [],
+            },
+            methods: {
+                btnClick(row) {
+                    this.temp = row
+                },
+                testClick(){
+                    this.temp.push( { name: 'xc', age: 22, })
+                }
+            }
+        })
+        console.log(root)
+
+    </script>
+</body>
+
+</html>
