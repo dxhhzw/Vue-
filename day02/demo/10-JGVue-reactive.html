@@ -175,7 +175,6 @@
             }
         })
         function defineReactive(target, key, value, enumerable) {
-            debugger
 
             if (typeof value === 'object' && value != null && !Array.isArray(value)) {
                 //非数组引用类型
@@ -215,6 +214,7 @@
                         reactify(value[j], vm)
                     }
                 } else {
+                    debugger
                     defineReactive.call(o, vm, key, value, true)
                 }
                 /* 添加代理 */
@@ -252,7 +252,6 @@
         }
         /* 将某一个对象的属性访问映射到对象的某一个属性成员上 */
         function proxy(target, prop, key) {
-            debugger
             Object.defineProperty(target, key, {
                 enumerable: true,
                 configurable: true,
@@ -260,7 +259,6 @@
                     return target[prop][key]
                 },
                 set(newVal) {
-                    debugger
                     return target[prop][key] = newVal
                 }
             })
