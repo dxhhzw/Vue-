@@ -14,7 +14,7 @@
     <script>
         //全局的event对象，提供on,off,emit方法，
         var event = (function () {
-             eventObjs = {}
+            eventObjs = {}
             return {
                 /* *
                 注册时间，可以连续注册，可以注册多个事件ss
@@ -22,7 +22,23 @@
                 on: function (type, handler) {
                     (eventObjs[type] || (eventObjs[type] = [])).push(handler)
                 },
-                off: function () { },
+                off: function (type, handler) {
+                    if (arguments.length === 0) {//没有参数，移除所有，
+                        eventObjs = {}
+                    } else if (arguments.length === 1) {//只有事件额类型，移除该事件的所有处理函数
+                        eventObjs[type] = []
+                    } else if (arguments.length === 2) {//移除type事件的handler处理函数
+                        //使用循环移除所有该函数对应的type事件
+                        let _events=eventObj[type]
+                        if(!_events){return}
+                        /* 倒着循环 数组的序号不会受到影响 */
+                        for(let i=_event.length-1;i>=0;i--){
+                            if(_events[i]===handler){
+                                _events.splice(i,1)
+                            }
+                        }
+                    }
+                },
                 /* *
                 发射事件，触发事件，包装参数，传递给事件处理函数
                 * */
