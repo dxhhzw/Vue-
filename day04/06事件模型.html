@@ -29,7 +29,7 @@
                         eventObjs[type] = []
                     } else if (arguments.length === 2) {//移除type事件的handler处理函数
                         //使用循环移除所有该函数对应的type事件
-                        let _events = eventObj[type]
+                        let _events = eventObjs[type]
                         if (!_events) { return }
                         /* 倒着循环 数组的序号不会受到影响 */
                         for (let i = _event.length - 1; i >= 0; i--) {
@@ -44,15 +44,25 @@
                 * */
                 emit: function (type) {
                     let args = Array.prototype.slice.call(arguments, 1)
-                    let _event = eventObj[type]
+                    let _event = eventObjs[type]
                     if (!_event) return
-                    for(let i=0;i<_event.length;i++){
+                    for (let i = 0; i < _event.length; i++) {
                         //如果绑定上下文就需要使用call和apply
-                        _event[i].apply(null,args)
+                        _event[i].apply(null, args)
                     }
                 }
             }
         })()
+    </script>
+    <script>
+        event.on("click", () => { console.log(1) })
+        event.on("click", () => { console.log(2) })
+        event.on("click", () => { console.log(3) })
+        event.on("click", () => { console.log(4) })
+        function f() {
+            event.emit('click')
+        }
+        f()
     </script>
 </body>
 
