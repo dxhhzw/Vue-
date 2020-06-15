@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <button onclick="btnClick()">
+            插入数据
+        </button>
+        <table>
+            <thead>
+                <tr>
+                    <th>测试列1</th>
+                    <th>测试列2</th>
+                </tr>
+            </thead>
+            <tbody id="solt">
+            </tbody>
+        </table>
+    </div>
+    <script>
+        let list1 = [1, 2]
+        let list2 = [3, 4]
+
+        let element = document.querySelector('#solt')
+        btnClick = function() {
+            let content = ''
+            for (i = 0; i < list1.length; i++) {
+                content += `<tr><td>${list1[i]}</td><td>${list2[i]}</td></tr>`
+            }
+            element.innerHTML = content
+        }
+        console.log(element)
+    </script>
+</body>
+
+</html>
