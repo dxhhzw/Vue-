@@ -115,8 +115,7 @@
             let elm = document.querySelector(options.el)
             this._template = elm
             this._parent = elm.parentNode
-            //reactify(this._data ,this)
-            this.initData() //将data进行响应式转换，进行代理
+            reactify(this._data ,this)
             this.mount()
         }
         JGVue.prototype.mount = function () {
@@ -175,14 +174,12 @@
             }
         })
         function defineReactive(target, key, value, enumerable) {
-
             if (typeof value === 'object' && value != null && !Array.isArray(value)) {
                 //非数组引用类型
                 reactify(value)
             }
             /* 折中处理后，this就是vue的实例 */
-            let that = this
-
+            let  that = this
             Object.defineProperty(target, key, {
                 configurable: true,
                 enumerable: !!enumerable,
@@ -192,18 +189,14 @@
                 },
                 set(newValue) {
                     console.log(`设置o的${key}属性为:${newValue}`)
-                    if (typeof newVal === 'object' && newValue != null) {
-                        value = reactify(newValue)
-                    } else {
-                        value = newValue
-                    }
                     /* 动态刷新 只做演示用 */
+                    value = newValue
                     that.mountComponent()
                 }
             })
         }
         /* 将对象转换为响应式 */
-        function reactify(o, vm) {
+        function reactify(o,vm) {
             let keys = Object.keys(o)
             for (let i = 0; i < keys.length; i++) {
                 let key = keys[i]
@@ -211,67 +204,23 @@
                 if (Array.isArray(value)) {
                     value.__proto__ = arr_methods
                     for (let j = 0; j < value.length; j++) {
-                        reactify(value[j], vm)
+                        reactify(value[j],vm)
                     }
                 } else {
-                    debugger
-                    defineReactive.call(o, vm, key, value, true)
-                }
-                /* 添加代理 */
-            }
-        }
-        //取代原来的reactify方法，将对象转换城响应式
-        function observer(obj, propName, vm) {
-            let keys = Object.keys(obj)
-            for (let i = 0; i < keys.length; i++) {
-                let key = keys[i]
-                if (Array.isArray(obj[key])) {
-                    //遍历成员
-                    for (let j = 0; j < obj[key].length; j++) {
-                        observer(obj[key][j], vm)
-                    }
-                } else {
-                    //递归
-                    observer(obj[key], vm)
+                    defineReactive.call(vm,o, key, value, true)
                 }
             }
-            defineReactive(obj)
         }
-        JGVue.prototype.initData = function () {
-            //遍历this._data的成员，将属性转换城响应式(上)，将直接属性，代理到实例上
-            let keys = Object.keys(this._data);
-            for (let i = 0; i < keys.length; i++) {
-                //这里将对象this._data[keys[i]]变成响应式化
-                reactify(this._data, this)
-            }
-            for (let i = 0; i < keys.length; i++) {
-                //这里将
-                /*                */
-                proxy(this, '_data', keys[i])
-            }
-        }
-        /* 将某一个对象的属性访问映射到对象的某一个属性成员上 */
-        function proxy(target, prop, key) {
-            Object.defineProperty(target, key, {
-                enumerable: true,
-                configurable: true,
-                get() {
-                    return target[prop][key]
-                },
-                set(newVal) {
-                    return target[prop][key] = newVal
-                }
-            })
-        }
+
         let app = new JGVue({
             el: "#root",
             data: {
                 name: "张三",
                 age: "19",
                 gender: "三",
-                info: [
-                    { message: '怎么样' },
-                    { message: '不怎么样' }
+                info:[
+                    {message:'怎么样'},
+                    {message:'不怎么样'}
                 ]
             }
         })
